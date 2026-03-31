@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
@@ -62,6 +63,27 @@ func GetDashboardByName(client apiClient.ClientInterface) (tool mcp.Tool, handle
 				return nil, fmt.Errorf("error marshalling dashboard: %w", err)
 			}
 			return mcp.NewToolResultText(string(dashboardJSON)), nil
+		}
+}
+
+func GetDashboardSchema(client apiClient.ClientInterface) (tool mcp.Tool, handler server.ToolHandlerFunc) {
+	return mcp.NewTool("perses_get_dashboard_schema",
+			mcp.WithDescription("Get the JSON schema for Perses dashboards")),
+		func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+			schemaFile := "schemas/dashboard.json"
+			data, err := os.ReadFile(schemaFile)
+			if err != nil {
+				return nil, fmt.Errorf("failed to read dashboard schema file '%s': %w", schemaFile, err)
+			}
+
+			// Validate that it's valid JSON
+			var dashboardSchema map[string]any
+			if err := json.Unmarshal(data, &dashboardSchema); err != nil {
+				return nil, fmt.Errorf("failed to parse dashboard schema JSON: %w", err)
+			}
+
+			// Return the raw JSON schema as string
+			return mcp.NewToolResultText(string(data)), nil
 		}
 }
 

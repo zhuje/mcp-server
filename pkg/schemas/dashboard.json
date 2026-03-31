@@ -1,0 +1,160 @@
+{
+  "title": "Perses Dashboard",
+  "type": "object",
+  "required": ["kind", "metadata", "spec"],
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": ["Dashboard"]
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["name", "project"],
+      "properties": {
+        "name": { "type": "string" },
+        "project": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "spec": {
+      "type": "object",
+      "properties": {
+        "display": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "description": { "type": "string" }
+          }
+        },
+        "datasources": {
+          "type": "object",
+          "patternProperties": {
+            ".*": { "$ref": "#/definitions/Datasource" }
+          }
+        },
+        "variables": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Variable" }
+        },
+        "panels": {
+          "type": "object",
+          "patternProperties": {
+            ".*": { "$ref": "#/definitions/Panel" }
+          }
+        },
+        "layouts": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Layout" }
+        },
+        "duration": { "type": "string" },
+        "refreshInterval": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "definitions": {
+    "Datasource": {
+      "description": "See datasource.md for full spec",
+      "type": "object"
+    },
+    "Variable": {
+      "description": "See variable.md for full spec",
+      "type": "object"
+    },
+    "Panel": {
+      "type": "object",
+      "required": ["kind", "spec"],
+      "properties": {
+        "kind": { "type": "string", "enum": ["Panel"] },
+        "spec": {
+          "type": "object",
+          "properties": {
+            "display": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "description": { "type": "string" }
+              }
+            },
+            "plugin": { "$ref": "#/definitions/PanelPlugin" },
+            "queries": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/Query" }
+            }
+          }
+        }
+      }
+    },
+    "PanelPlugin": {
+      "type": "object",
+      "properties": {
+        "kind": { "type": "string" },
+        "spec": { "type": "object" }
+      }
+    },
+    "Query": {
+      "type": "object",
+      "required": ["kind", "spec"],
+      "properties": {
+        "kind": { "type": "string" },
+        "spec": {
+          "type": "object",
+          "properties": {
+            "plugin": { "$ref": "#/definitions/QueryPlugin" }
+          }
+        }
+      }
+    },
+    "QueryPlugin": {
+      "type": "object",
+      "properties": {
+        "kind": { "type": "string" },
+        "spec": { "type": "object" }
+      }
+    },
+    "Layout": {
+      "type": "object",
+      "required": ["kind", "spec"],
+      "properties": {
+        "kind": { "type": "string", "enum": ["Grid"] },
+        "spec": {
+          "type": "object",
+          "properties": {
+            "display": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "string" },
+                "collapse": {
+                  "type": "object",
+                  "properties": {
+                    "open": { "type": "boolean" }
+                  }
+                }
+              }
+            },
+            "items": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/GridItem" }
+            }
+          }
+        }
+      }
+    },
+    "GridItem": {
+      "type": "object",
+      "required": ["x", "y", "width", "height", "content"],
+      "properties": {
+        "x": { "type": "integer" },
+        "y": { "type": "integer" },
+        "width": { "type": "integer" },
+        "height": { "type": "integer" },
+        "content": {
+          "type": "object",
+          "properties": {
+            "$ref": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

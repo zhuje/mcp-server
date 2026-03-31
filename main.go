@@ -1,6 +1,7 @@
 package main
 
 import (
+	// "encoding/json"
 	"flag"
 	"fmt"
 	"log/slog"
@@ -33,6 +34,8 @@ func init() {
 	slog.SetDefault(slog.New(logHandler))
 }
 
+// var dashboardSchema map[string]any
+
 func main() {
 
 	slog.Info("The Perses Server URL is", "url", persesServerURL)
@@ -43,6 +46,20 @@ func main() {
 	if err != nil {
 		os.Exit(1)
 	}
+
+	// // Static test with CUELANG to see if it can convert to JSON correctly
+	// // Preload Perses Dashboard schema
+	// schemaFile := "schemas/dashboard.json"
+	// data, err := os.ReadFile(schemaFile)
+	// if err != nil {
+	// 	slog.Error("Failed to read dashboard schema", "file", schemaFile, "error", err)
+	// 	os.Exit(1)
+	// }
+	// if err := json.Unmarshal(data, &dashboardSchema); err != nil {
+	// 	slog.Error("Failed to parse dashboard schema JSON", "error", err)
+	// 	os.Exit(1)
+	// }
+	// slog.Info("Perses Dashboard schema loaded successfully")
 
 	mcpServer := server.NewMCPServer(
 		"perses-mcp",
@@ -62,6 +79,7 @@ func main() {
 	mcpServer.AddTool(tools.ListDashboards(persesClient))
 	mcpServer.AddTool(tools.GetDashboardByName(persesClient))
 	mcpServer.AddTool(tools.CreateDashboard(persesClient))
+	mcpServer.AddTool(tools.GetDashboardSchema(persesClient))
 
 	//Datasource
 	mcpServer.AddTool(tools.ListGlobalDatasources(persesClient))
